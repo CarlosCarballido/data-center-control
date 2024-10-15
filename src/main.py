@@ -14,22 +14,22 @@ def cargar_reglas():
         print("Hechos iniciales cargados correctamente.")
     except Exception as e:
         print(f"Error cargando hechos_iniciales.clp: {e}")
+        
+    env.reset()
     
-    # Mostrar los hechos antes de ejecutar
-    print("Hechos iniciales:")
+    print("\nHechos iniciales:")
     for fact in env.facts():
         print(fact)
     
     return env
 
 def ejecutar_reglas(env):
-    print("Ejecutando reglas...")
+    print("\nEjecutando reglas...")
     env.run()
 
-    print("Hechos generados:")
+    print("\nHechos generados:")
     for fact in env.facts():
         print(fact)
-
 
 if __name__ == "__main__":
     env = cargar_reglas()

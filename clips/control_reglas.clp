@@ -19,7 +19,7 @@
 (defrule encender-ac
     (zona (nombre ?nombre) (temperatura ?temp&:(> ?temp 25)))
     =>
-    (assert (accion (tipo climatizacion) (comando "encender_ac")))
+    (assert (accion (tipo climatizacion) (comando "encender_ac") (nombre ?nombre)))
     (printout t "Encendiendo aire acondicionado en la zona: " ?nombre crlf)
 )
 
