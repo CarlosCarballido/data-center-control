@@ -3,6 +3,7 @@
     (slot temperatura)
     (slot humedad)
     (slot estado_ac) ;; encendido, apagado
+    (slot acceso)    ;; abierto, cerrado
 )
 
 (deftemplate rack
@@ -26,7 +27,7 @@
 (defrule apagar-ac
     (zona (nombre ?nombre) (temperatura ?temp&:(<= ?temp 20)))
     =>
-    (assert (accion (tipo climatizacion) (comando "apagar_ac")))
+    (assert (accion (tipo climatizacion) (comando "apagar_ac") (nombre ?nombre)))
     (printout t "Apagando aire acondicionado en la zona: " ?nombre crlf)
 )
 
@@ -34,4 +35,22 @@
     (rack (id ?id) (voltaje ?v&:(< ?v 210)))
     =>
     (printout t "Alerta: Voltaje bajo en el rack: " ?id crlf)
+)
+
+(defrule alerta-humedad
+    (zona (nombre ?nombre) (humedad ?h&:(> ?h 70)))
+    =>
+    (printout t "Alerta: Humedad alta en la zona: " ?nombre crlf)
+)
+
+(defrule verificar-acceso
+    (zona (nombre ?nombre) (acceso abierto))
+    =>
+    (printout t "Acceso abierto en la zona: " ?nombre crlf)
+)
+
+(defrule verificar-acceso-cerrado
+    (zona (nombre ?nombre) (acceso cerrado))
+    =>
+    (printout t "Acceso cerrado en la zona: " ?nombre crlf)
 )
