@@ -1,27 +1,37 @@
 import clips
 
 def cargar_reglas():
-    # Crear el entorno de CLIPS
     env = clips.Environment()
     
-    # Cargar los archivos CLP
-    env.load('clips/control_reglas.clp')
-    env.load('clips/hechos_iniciales.clp')
+    try:
+        env.load('clips/control_reglas.clp')
+        print("Reglas cargadas correctamente.")
+    except Exception as e:
+        print(f"Error cargando control_reglas.clp: {e}")
     
-    # Retornar el entorno cargado
+    try:
+        env.load('clips/hechos_iniciales.clp')
+        print("Hechos iniciales cargados correctamente.")
+    except Exception as e:
+        print(f"Error cargando hechos_iniciales.clp: {e}")
+    
+    # Mostrar los hechos antes de ejecutar
+    print("Hechos iniciales:")
+    for fact in env.facts():
+        print(fact)
+    
     return env
 
 def ejecutar_reglas(env):
-    # Ejecutar el motor de reglas
+    print("Ejecutando reglas...")
     env.run()
-    
-    # Imprimir los hechos generados
+
+    print("Hechos generados:")
     for fact in env.facts():
         print(fact)
 
+
 if __name__ == "__main__":
-    # Cargar reglas y hechos
     env = cargar_reglas()
     
-    # Ejecutar las reglas
     ejecutar_reglas(env)
