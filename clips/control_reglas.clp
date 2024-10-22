@@ -100,14 +100,14 @@
     (printout t "Alerta: Humedad alta en el sensor de humedad en la zona: " ?nombre crlf)
 )
 
-(defrule verificar-fans
-    (fans (value ?v&:(> ?v 400)) (zona (nombre ?nombre)))
+(defrule verificar-ventiladores-altos
+    (ventiladores (value ?v&:(> ?v 400)) (zona (nombre ?nombre)))
     =>
     (printout t "Alerta: Velocidad de los ventiladores alta en la zona: " ?nombre crlf)
 )
 
-(defrule verificar-fans-bajos
-    (fans (value ?v&:(< ?v 200)) (zona (nombre ?nombre)))
+(defrule verificar-ventiladores-bajos
+    (ventiladores (value ?v&:(< ?v 200)) (zona (nombre ?nombre)))
     =>
     (printout t "Alerta: Velocidad de los ventiladores baja en la zona: " ?nombre crlf)
 )
