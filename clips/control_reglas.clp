@@ -28,8 +28,26 @@
 )
 
 (deftemplate actuadores
-    (slot tipo)    ;; ventiladores, luces, etc.
+    (slot tipo)    ;; ventiladores, luces, altavoces etc.
     (slot valor)
+)
+
+(deftemplate humo
+    (slot zona)
+)
+
+(deftemplate agua
+    (slot zona)
+)
+
+(deftemplate sensor_humo
+    (slot value)
+    (slot zona)
+)
+
+(deftemplate sensor_agua
+    (slot value)
+    (slot zona)
 )
 
 (defrule encender-ac
@@ -71,25 +89,39 @@
 )
 
 (defrule verificar-temperatura
-    (temperature_sensor (value ?temp&:(> ?temp 25)))
+    (temperature_sensor (value ?temp&:(> ?temp 25)) (zona (nombre ?nombre)))
     =>
-    (printout t "Alerta: Temperatura alta en el sensor de temperatura" crlf)
+    (printout t "Alerta: Temperatura alta en el sensor de temperatura en la zona: " ?nombre crlf)
 )
 
 (defrule verificar-humedad
-    (humidity_sensor (value ?h&:(> ?h 70)))
+    (humidity_sensor (value ?h&:(> ?h 70)) (zona (nombre ?nombre)))
     =>
-    (printout t "Alerta: Humedad alta en el sensor de humedad" crlf)
+    (printout t "Alerta: Humedad alta en el sensor de humedad en la zona: " ?nombre crlf)
 )
 
 (defrule verificar-fans
-    (fans (value ?v&:(> ?v 400)))
+    (fans (value ?v&:(> ?v 400)) (zona (nombre ?nombre)))
     =>
-    (printout t "Alerta: Velocidad de los ventiladores alta" crlf)
+    (printout t "Alerta: Velocidad de los ventiladores alta en la zona: " ?nombre crlf)
 )
 
 (defrule verificar-fans-bajos
-    (fans (value ?v&:(< ?v 200)))
+    (fans (value ?v&:(< ?v 200)) (zona (nombre ?nombre)))
     =>
-    (printout t "Alerta: Velocidad de los ventiladores baja" crlf)
+    (printout t "Alerta: Velocidad de los ventiladores baja en la zona: " ?nombre crlf)
+)
+
+(defrule activar-alarma-incendio
+    (smoke_sensor (value si) (zona (nombre ?nombre)))
+    =>
+    (assert (desastre (tipo incendio) (zona (nombre ?nombre))))
+    (printout t "Alerta: Incendio detectado en la zona: " ?nombre crlf)
+)
+
+(defrule activar-alarma-inundacion
+    (water_sensor (value si) (zona (nombre ?nombre)))
+    =>
+    (assert (desastre (tipo inundacion) (zona ?nombre)))
+    (printout t "Alerta: Inundacion detectada en la zona: " ?nombre crlf)
 )
