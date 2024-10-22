@@ -1,14 +1,14 @@
 import clips
 import pytest
+from io import StringIO
+import sys
 
 @pytest.fixture
 def configurar_entorno():
     env = clips.Environment()
 
-    # Cargar reglas desde el archivo CLIPS
     env.load('clips/control_reglas.clp')
 
-    # Establecer hechos iniciales para las pruebas
     env.assert_string('(zona (nombre "Zona Alta") (temperatura 30) (humedad 60) (estado_ac apagado) (acceso abierto))')
     env.assert_string('(zona (nombre "Zona Baja") (temperatura 15) (humedad 40) (estado_ac encendido) (acceso cerrado))')
     env.assert_string('(rack (id "Rack Baja") (voltaje 180))')
@@ -25,10 +25,17 @@ def configurar_entorno():
 
     return env
 
-# Funciones reutilizables para verificar condiciones
+def capturar_salida(env):
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
+    try:
+        env.run()
+        return sys.stdout.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
 def verificar_accion(env, comando, zona):
-    env.run()
+    salida = capturar_salida(env)
     accion = any(
         fact.template.name == "accion" and fact["comando"] == comando and fact["nombre"] == zona 
         for fact in env.facts()
@@ -36,12 +43,11 @@ def verificar_accion(env, comando, zona):
     assert accion, f"La acción '{comando}' debería haberse ejecutado en la {zona}."
 
 def verificar_alerta(env, mensaje):
-    env.run()
-    alerta = any(mensaje in str(fact) for fact in env.facts())
-    assert alerta, f"Debería haber una alerta: '{mensaje}'."
+    salida = capturar_salida(env)
+    assert mensaje in salida, f"Debería haber una alerta: '{mensaje}'."
 
 def verificar_desastre(env, tipo, zona):
-    env.run()
+    salida = capturar_salida(env)
     desastre = any(
         fact.template.name == "desastre" and fact["tipo"] == tipo and fact["zona"] == zona
         for fact in env.facts()
@@ -62,39 +68,39 @@ def test_activar_alarma_incendio(configurar_entorno):
 
 def test_alerta_ventiladores_altos(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Velocidad de los ventiladores alta en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Velocidad de los ventiladores alta en la zona: Zona Alta")
 
 def test_alerta_ventiladores_bajos(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Velocidad de los ventiladores baja en la zona: Zona Baja")
+    verificar_alerta(env, "Alerta: Velocidad de los ventiladores baja en la zona: Zona Baja")
 
 def test_alerta_voltaje_bajo(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Voltaje bajo en el rack: Rack Baja")
+    verificar_alerta(env, "Alerta: Voltaje bajo en el rack: Rack Baja")
 
 def test_alerta_humedad_alta(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Humedad alta en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Humedad alta en la zona: Zona Alta")
 
 def test_alerta_temperatura_alta(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Temperatura alta en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Temperatura alta en la zona: Zona Alta")
 
 def test_alerta_luces_altas(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Las luces están muy brillantes en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Las luces están muy brillantes en la zona: Zona Alta")
 
 def test_alerta_luces_bajas(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Las luces están muy tenues en la zona: Zona Baja")
+    verificar_alerta(env, "Alerta: Las luces están muy tenues en la zona: Zona Baja")
 
 def test_alerta_acceso_abierto(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Acceso abierto en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Acceso abierto en la zona: Zona Alta")
 
 def test_alerta_acceso_cerrado(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Acceso cerrado en la zona: Zona Baja")
+    verificar_alerta(env, "Alerta: Acceso cerrado en la zona: Zona Baja")
 
 if __name__ == "__main__":
     pytest.main()
