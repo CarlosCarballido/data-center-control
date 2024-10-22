@@ -84,4 +84,59 @@ def modificar_actuador(env, nombre, zona=None, tipo=None, estado=None):
                 new_fact += f' (tipo "{tipo if tipo else fact["tipo"]}")'
                 new_fact += f' (estado {estado if estado else fact["estado"]}))'
                 env.assert_string(new_fact)
+       
+def agregar_humo(env, nombre, zona, tipo, estado):
+    env.assert_string(f'(humo (nombre "{nombre}") (zona "{zona}") (tipo "{tipo}") (estado {estado}))')
+    
+def modificar_humo(env, nombre, zona=None, tipo=None, estado=None):
+    for fact in env.facts():
+        if "humo" in str(fact):
+            if fact["nombre"] == nombre:
+                env.retract(fact)
+                new_fact = f'(humo (nombre "{nombre}")'
+                new_fact += f' (zona "{zona if zona else fact["zona"]}")'
+                new_fact += f' (tipo "{tipo if tipo else fact["tipo"]}")'
+                new_fact += f' (estado {estado if estado else fact["estado"]}))'
+                env.assert_string(new_fact)       
                 
+def agregar_detector_humos(env, nombre, zona, tipo, estado):
+    env.assert_string(f'(detector de humos (nombre "{nombre}") (zona "{zona}") (tipo "{tipo}") (estado {estado}))')
+    
+def modificar_detector_humos(env, nombre, zona=None, tipo=None, estado=None):
+    for fact in env.facts():
+        if "detector_humos" in str(fact):
+            if fact["nombre"] == nombre:
+                env.retract(fact)
+                new_fact = f'(detector de humos (nombre "{nombre}")'
+                new_fact += f' (zona "{zona if zona else fact["zona"]}")'
+                new_fact += f' (tipo "{tipo if tipo else fact["tipo"]}")'
+                new_fact += f' (estado {estado if estado else fact["estado"]}))'
+                env.assert_string(new_fact)
+                
+def agregar_agua(env, nombre, zona, tipo, estado):
+    env.assert_string(f'(agua (nombre "{nombre}") (zona "{zona}") (tipo "{tipo}") (estado {estado}))')
+    
+def modificar_agua(env, nombre, zona=None, tipo=None, estado=None):
+    for fact in env.facts():
+        if "agua" in str(fact):
+            if fact["nombre"] == nombre:
+                env.retract(fact)
+                new_fact = f'(agua (nombre "{nombre}")'
+                new_fact += f' (zona "{zona if zona else fact["zona"]}")'
+                new_fact += f' (tipo "{tipo if tipo else fact["tipo"]}")'
+                new_fact += f' (estado {estado if estado else fact["estado"]}))'
+                env.assert_string(new_fact)
+                
+def agregar_detector_agua(env, nombre, zona, tipo, estado):
+    env.assert_string(f'(detector de agua (nombre "{nombre}") (zona "{zona}") (tipo "{tipo}") (estado {estado}))')
+    
+def modificar_detector_agua(env, nombre, zona=None, tipo=None, estado=None):
+    for fact in env.facts():
+        if "detector_agua" in str(fact):
+            if fact["nombre"] == nombre:
+                env.retract(fact)
+                new_fact = f'(detector de agua (nombre "{nombre}")'
+                new_fact += f' (zona "{zona if zona else fact["zona"]}")'
+                new_fact += f' (tipo "{tipo if tipo else fact["tipo"]}")'
+                new_fact += f' (estado {estado if estado else fact["estado"]}))'
+                env.assert_string(new_fact)

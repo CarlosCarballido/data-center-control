@@ -28,8 +28,26 @@
 )
 
 (deftemplate actuadores
-    (slot tipo)    ;; ventiladores, luces, etc.
+    (slot tipo)    ;; ventiladores, luces, altavoces etc.
     (slot valor)
+)
+
+(deftemplate humo
+    (slot zona)
+)
+
+(deftemplate agua
+    (slot zona)
+)
+
+(deftemplate sensor_humo
+    (slot value)
+    (slot zona)
+)
+
+(deftemplate sensor_agua
+    (slot value)
+    (slot zona)
 )
 
 (defrule encender-ac
@@ -92,4 +110,18 @@
     (fans (value ?v&:(< ?v 200)))
     =>
     (printout t "Alerta: Velocidad de los ventiladores baja" crlf)
+)
+
+(defrule activar-alarma-incendio
+    (smoke_sensor (value si))
+    =>
+    (assert (desastre (tipo incendio) (zona "Sala de servidores")))
+    (printout t "Alerta: Incendio detectado en la sala de servidores" crlf)
+)
+
+(defrule activar-alarma-inundacion
+    (water_sensor (value si))
+    =>
+    (assert (desastre (tipo inundacion) (zona "Sala de servidores")))
+    (printout t "Alerta: Inundacion detectada en la sala de servidores" crlf)
 )
