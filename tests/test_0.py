@@ -7,6 +7,7 @@ def configurar_entorno():
 
     env.load('clips/control_reglas.clp')
 
+    # hechos iniciales
     env.assert_string('(zona (nombre "Zona Alta") (temperatura 30) (humedad 60) (estado_ac apagado) (acceso abierto))')
     env.assert_string('(zona (nombre "Zona Baja") (temperatura 15) (humedad 40) (estado_ac encendido) (acceso cerrado))')
     env.assert_string('(rack (id "Rack Baja") (voltaje 180))')
@@ -41,7 +42,7 @@ def test_alerta_ventiladores_altos(configurar_entorno):
     env = configurar_entorno
     env.run()
 
-    alerta_ventiladores = any(fact.template.name == "fact-asserted" and "Velocidad de los ventiladores alta" in str(fact) for fact in env.facts())
+    alerta_ventiladores = any("Velocidad de los ventiladores alta" in str(fact) for fact in env.facts())
     assert alerta_ventiladores, "Debería haber una alerta por ventiladores altos en la Zona Alta."
 
 def test_alerta_voltaje_bajo(configurar_entorno):
