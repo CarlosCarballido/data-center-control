@@ -17,6 +17,21 @@
     (slot nombre)  ;; nombre de la zona
 )
 
+(deftemplate desastre
+    (slot tipo)    ;; incendio, inundacion, etc.
+    (slot zona)    ;; nombre de la zona
+)
+
+(deftemplate sensor
+    (slot tipo)    ;; temperatura, humedad, etc.
+    (slot valor)
+)
+
+(deftemplate actuadores
+    (slot tipo)    ;; ventiladores, luces, etc.
+    (slot valor)
+)
+
 (defrule encender-ac
     (zona (nombre ?nombre) (temperatura ?temp&:(> ?temp 25)))
     =>
@@ -53,4 +68,28 @@
     (zona (nombre ?nombre) (acceso cerrado))
     =>
     (printout t "Acceso cerrado en la zona: " ?nombre crlf)
+)
+
+(defrule verificar-temperatura
+    (temperature_sensor (value ?temp&:(> ?temp 25)))
+    =>
+    (printout t "Alerta: Temperatura alta en el sensor de temperatura" crlf)
+)
+
+(defrule verificar-humedad
+    (humidity_sensor (value ?h&:(> ?h 70)))
+    =>
+    (printout t "Alerta: Humedad alta en el sensor de humedad" crlf)
+)
+
+(defrule verificar-fans
+    (fans (value ?v&:(> ?v 400)))
+    =>
+    (printout t "Alerta: Velocidad de los ventiladores alta" crlf)
+)
+
+(defrule verificar-fans-bajos
+    (fans (value ?v&:(< ?v 200)))
+    =>
+    (printout t "Alerta: Velocidad de los ventiladores baja" crlf)
 )
