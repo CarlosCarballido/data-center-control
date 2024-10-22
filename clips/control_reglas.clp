@@ -28,6 +28,7 @@
 )
 
 (deftemplate actuadores
+    (slot zona)
     (slot tipo)    ;; ventiladores, luces, altavoces etc.
     (slot valor)
 )
@@ -40,12 +41,8 @@
     (slot zona)
 )
 
-(deftemplate sensor_humo
-    (slot value)
-    (slot zona)
-)
-
-(deftemplate sensor_agua
+(deftemplate sensor
+    (slot tipo)    ;; temperatura, humedad, etc.
     (slot value)
     (slot zona)
 )
@@ -89,35 +86,50 @@
 )
 
 (defrule verificar-temperatura
-    (temperature_sensor (value ?temp&:(> ?temp 25)) (zona ?zona))
+    (sensor (tipo temperatura) (value ?temp&:(> ?temp 25)) (zona ?zona))
     (zona (nombre ?zona))
     =>
-    (printout t "Alerta: Temperatura alta en el sensor de temperatura en la zona: " ?zona crlf)
+    (printout t "Alerta: Temperatura alta en la zona: " ?zona crlf)
 )
 
 (defrule verificar-humedad
-    (humidity_sensor (value ?h&:(> ?h 70)) (zona ?zona))
+    (sensor (tipo humedad) (value ?h&:(> ?h 70)) (zona ?zona))
     (zona (nombre ?zona))
     =>
-    (printout t "Alerta: Humedad alta en el sensor de humedad en la zona: " ?zona crlf)
+    (printout t "Alerta: Humedad alta en la zona: " ?zona crlf)
 )
 
 (defrule verificar-ventiladores-altos
-    (ventiladores (value ?v&:(> ?v 400)) (zona ?zona))
+    (actuadores (tipo ventiladores) (valor ?v&:(> ?v 400)) (zona ?zona))
     (zona (nombre ?zona))
     =>
     (printout t "Alerta: Velocidad de los ventiladores alta en la zona: " ?zona crlf)
 )
 
 (defrule verificar-ventiladores-bajos
-    (ventiladores (value ?v&:(< ?v 200)) (zona ?zona))
+    (actuadores (tipo ventiladores) (valor ?v&:(< ?v 200)) (zona ?zona))
     (zona (nombre ?zona))
     =>
     (printout t "Alerta: Velocidad de los ventiladores baja en la zona: " ?zona crlf)
 )
 
+(defrule verificar-luces-altas
+    (actuadores (tipo luces) (valor ?l&:(> ?l 100)) (zona ?zona))
+    (zona (nombre ?zona))
+    =>
+    (printout t "Alerta: Las luces están muy brillantes en la zona: " ?zona crlf)
+)
+
+(defrule verificar-luces-bajas
+    (actuadores (tipo luces) (valor ?l&:(< ?l 20)) (zona ?zona))
+    (zona (nombre ?zona))
+    =>
+    (printout t "Alerta: Las luces están muy tenues en la zona: " ?zona crlf)
+)
+
+
 (defrule activar-alarma-incendio
-    (sensor_humo (value si) (zona ?zona))
+    (sensor (tipo humo) (value si) (zona ?zona))
     (zona (nombre ?zona))
     =>
     (assert (desastre (tipo incendio) (zona ?zona)))
@@ -125,7 +137,7 @@
 )
 
 (defrule activar-alarma-inundacion
-    (sensor_agua (value si) (zona ?zona))
+    (sensor (tipo agua) (value si) (zona ?zona))
     (zona (nombre ?zona))
     =>
     (assert (desastre (tipo inundacion) (zona ?zona)))
