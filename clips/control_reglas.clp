@@ -113,15 +113,15 @@
 )
 
 (defrule activar-alarma-incendio
-    (smoke_sensor (value si))
+    (smoke_sensor (value si) (zona ?zona))
     =>
-    (assert (desastre (tipo incendio) (zona "Sala de servidores")))
-    (printout t "Alerta: Incendio detectado en la sala de servidores" crlf)
+    (assert (desastre (tipo incendio) (zona ?zona)))
+    (printout t "Alerta: Incendio detectado en " ?zona crlf)
 )
 
 (defrule activar-alarma-inundacion
-    (water_sensor (value si))
+    (water_sensor (value si) (zona ?zona))
     =>
-    (assert (desastre (tipo inundacion) (zona "Sala de servidores")))
-    (printout t "Alerta: Inundacion detectada en la sala de servidores" crlf)
+    (assert (desastre (tipo inundacion) (zona ?zona)))
+    (printout t "Alerta: Inundacion detectada en " ?zona crlf)
 )
