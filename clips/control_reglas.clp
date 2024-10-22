@@ -89,39 +89,45 @@
 )
 
 (defrule verificar-temperatura
-    (temperature_sensor (value ?temp&:(> ?temp 25)) (zona (nombre ?nombre)))
+    (temperature_sensor (value ?temp&:(> ?temp 25)) (zona ?zona))
+    (zona (nombre ?zona))
     =>
-    (printout t "Alerta: Temperatura alta en el sensor de temperatura en la zona: " ?nombre crlf)
+    (printout t "Alerta: Temperatura alta en el sensor de temperatura en la zona: " ?zona crlf)
 )
 
 (defrule verificar-humedad
-    (humidity_sensor (value ?h&:(> ?h 70)) (zona (nombre ?nombre)))
+    (humidity_sensor (value ?h&:(> ?h 70)) (zona ?zona))
+    (zona (nombre ?zona))
     =>
-    (printout t "Alerta: Humedad alta en el sensor de humedad en la zona: " ?nombre crlf)
+    (printout t "Alerta: Humedad alta en el sensor de humedad en la zona: " ?zona crlf)
 )
 
 (defrule verificar-ventiladores-altos
-    (ventiladores (value ?v&:(> ?v 400)) (zona (nombre ?nombre)))
+    (ventiladores (value ?v&:(> ?v 400)) (zona ?zona))
+    (zona (nombre ?zona))
     =>
-    (printout t "Alerta: Velocidad de los ventiladores alta en la zona: " ?nombre crlf)
+    (printout t "Alerta: Velocidad de los ventiladores alta en la zona: " ?zona crlf)
 )
 
 (defrule verificar-ventiladores-bajos
-    (ventiladores (value ?v&:(< ?v 200)) (zona (nombre ?nombre)))
+    (ventiladores (value ?v&:(< ?v 200)) (zona ?zona))
+    (zona (nombre ?zona))
     =>
-    (printout t "Alerta: Velocidad de los ventiladores baja en la zona: " ?nombre crlf)
+    (printout t "Alerta: Velocidad de los ventiladores baja en la zona: " ?zona crlf)
 )
 
 (defrule activar-alarma-incendio
-    (smoke_sensor (value si) (zona (nombre ?nombre)))
+    (sensor_humo (value si) (zona ?zona))
+    (zona (nombre ?zona))
     =>
-    (assert (desastre (tipo incendio) (zona (nombre ?nombre))))
-    (printout t "Alerta: Incendio detectado en la zona: " ?nombre crlf)
+    (assert (desastre (tipo incendio) (zona ?zona)))
+    (printout t "Alerta: Incendio detectado en la zona: " ?zona crlf)
 )
 
 (defrule activar-alarma-inundacion
-    (water_sensor (value si) (zona (nombre ?nombre)))
+    (sensor_agua (value si) (zona ?zona))
+    (zona (nombre ?zona))
     =>
-    (assert (desastre (tipo inundacion) (zona ?nombre)))
-    (printout t "Alerta: Inundacion detectada en la zona: " ?nombre crlf)
+    (assert (desastre (tipo inundacion) (zona ?zona)))
+    (printout t "Alerta: Inundacion detectada en la zona: " ?zona crlf)
 )
