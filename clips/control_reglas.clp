@@ -17,16 +17,19 @@
     (slot nombre)  ;; nombre de la zona
 )
 
-(deftemplate temperature_sensor
-    (slot value)
+(deftemplate desastre
+    (slot tipo)    ;; incendio, inundacion, etc.
+    (slot zona)    ;; nombre de la zona
 )
 
-(deftemplate humidity_sensor
-    (slot value)
+(deftemplate sensor
+    (slot tipo)    ;; temperatura, humedad, etc.
+    (slot valor)
 )
 
-(deftemplate fans
-    (slot value)
+(deftemplate actuadores
+    (slot tipo)    ;; ventiladores, luces, etc.
+    (slot valor)
 )
 
 (defrule encender-ac
