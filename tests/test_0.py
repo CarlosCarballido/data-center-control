@@ -42,9 +42,10 @@ def verificar_accion(env, comando, zona):
     )
     assert accion, f"La acción '{comando}' debería haberse ejecutado en la {zona}."
 
-def verificar_alerta(env, mensaje):
+def verificar_alerta(env, mensaje, zona):
     salida = capturar_salida(env)
-    assert mensaje in salida, f"Debería haber una alerta: '{mensaje}'."
+    alerta_mensaje = mensaje.format(zona=zona)
+    assert alerta_mensaje in salida, f"Debería haber una alerta: '{alerta_mensaje}'."
 
 def verificar_desastre(env, tipo, zona):
     salida = capturar_salida(env)
@@ -68,39 +69,39 @@ def test_activar_alarma_incendio(configurar_entorno):
 
 def test_alerta_ventiladores_altos(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Velocidad de los ventiladores alta en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Velocidad de los ventiladores alta en la zona: {zona}", "Zona Alta")
 
 def test_alerta_ventiladores_bajos(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Velocidad de los ventiladores baja en la zona: Zona Baja")
+    verificar_alerta(env, "Alerta: Velocidad de los ventiladores baja en la zona: {zona}", "Zona Baja")
 
 def test_alerta_voltaje_bajo(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Voltaje bajo en el rack: Rack Baja")
+    verificar_alerta(env, "Alerta: Voltaje bajo en el rack: {zona}", "Rack Baja")
 
 def test_alerta_humedad_alta(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Humedad alta en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Humedad alta en la zona: {zona}", "Zona Alta")
 
 def test_alerta_temperatura_alta(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Temperatura alta en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Temperatura alta en la zona: {zona}", "Zona Alta")
 
 def test_alerta_luces_altas(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Las luces están muy brillantes en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Las luces están muy brillantes en la zona: {zona}", "Zona Alta")
 
 def test_alerta_luces_bajas(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Las luces están muy tenues en la zona: Zona Baja")
+    verificar_alerta(env, "Alerta: Las luces están muy tenues en la zona: {zona}", "Zona Baja")
 
 def test_alerta_acceso_abierto(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Acceso abierto en la zona: Zona Alta")
+    verificar_alerta(env, "Alerta: Acceso abierto en la zona: {zona}", "Zona Alta")
 
 def test_alerta_acceso_cerrado(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Acceso cerrado en la zona: Zona Baja")
+    verificar_alerta(env, "Alerta: Acceso cerrado en la zona: {zona}", "Zona Baja")
 
 if __name__ == "__main__":
     pytest.main()
