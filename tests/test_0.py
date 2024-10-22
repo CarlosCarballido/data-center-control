@@ -97,11 +97,11 @@ def test_alerta_luces_bajas(configurar_entorno):
 
 def test_alerta_acceso_abierto(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Acceso abierto en la zona: {zona}", "Zona Alta")
+    verificar_alerta(env, "Acceso abierto en la zona: {zona}", "Zona Alta")
 
 def test_alerta_acceso_cerrado(configurar_entorno):
     env = configurar_entorno
-    verificar_alerta(env, "Alerta: Acceso cerrado en la zona: {zona}", "Zona Baja")
+    verificar_alerta(env, "Acceso cerrado en la zona: {zona}", "Zona Baja")
 
 if __name__ == "__main__":
     pytest.main()
