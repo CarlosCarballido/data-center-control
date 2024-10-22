@@ -7,7 +7,6 @@ def configurar_entorno():
 
     env.load('clips/control_reglas.clp')
 
-    # hechos iniciales
     env.assert_string('(zona (nombre "Zona Alta") (temperatura 30) (humedad 60) (estado_ac apagado) (acceso abierto))')
     env.assert_string('(zona (nombre "Zona Baja") (temperatura 15) (humedad 40) (estado_ac encendido) (acceso cerrado))')
     env.assert_string('(rack (id "Rack Baja") (voltaje 180))')
@@ -31,6 +30,13 @@ def test_activar_ac(configurar_entorno):
     ac_encendido = any(fact.template.name == "accion" and fact["comando"] == "encender_ac" and fact["nombre"] == "Zona Alta" for fact in env.facts())
     assert ac_encendido, "El aire acondicionado debería haberse encendido en la Zona Alta."
 
+def test_apagar_ac(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    ac_apagado = any(fact.template.name == "accion" and fact["comando"] == "apagar_ac" and fact["nombre"] == "Zona Baja" for fact in env.facts())
+    assert ac_apagado, "El aire acondicionado debería haberse apagado en la Zona Baja."
+
 def test_activar_alarma_incendio(configurar_entorno):
     env = configurar_entorno
     env.run()
@@ -45,12 +51,61 @@ def test_alerta_ventiladores_altos(configurar_entorno):
     alerta_ventiladores = any("Velocidad de los ventiladores alta" in str(fact) for fact in env.facts())
     assert alerta_ventiladores, "Debería haber una alerta por ventiladores altos en la Zona Alta."
 
+def test_alerta_ventiladores_bajos(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_ventiladores = any("Velocidad de los ventiladores baja" in str(fact) for fact in env.facts())
+    assert alerta_ventiladores, "Debería haber una alerta por ventiladores bajos en la Zona Baja."
+
 def test_alerta_voltaje_bajo(configurar_entorno):
     env = configurar_entorno
     env.run()
 
     alerta_voltaje = any("Voltaje bajo en el rack" in str(fact) for fact in env.facts())
     assert alerta_voltaje, "Debería haber una alerta de voltaje bajo en el Rack Baja."
+
+def test_alerta_humedad_alta(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_humedad = any("Humedad alta en la zona" in str(fact) for fact in env.facts())
+    assert alerta_humedad, "Debería haber una alerta de humedad alta en la Zona Alta."
+
+def test_alerta_temperatura_alta(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_temperatura = any("Temperatura alta en la zona" in str(fact) for fact in env.facts())
+    assert alerta_temperatura, "Debería haber una alerta de temperatura alta en la Zona Alta."
+
+def test_alerta_luces_altas(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_luces = any("Las luces están muy brillantes" in str(fact) for fact in env.facts())
+    assert alerta_luces, "Debería haber una alerta por luces brillantes en la Zona Alta."
+
+def test_alerta_luces_bajas(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_luces = any("Las luces están muy tenues" in str(fact) for fact in env.facts())
+    assert alerta_luces, "Debería haber una alerta por luces tenues en la Zona Baja."
+
+def test_alerta_acceso_abierto(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_acceso_abierto = any("Acceso abierto en la zona" in str(fact) for fact in env.facts())
+    assert alerta_acceso_abierto, "Debería haber una alerta de acceso abierto en la Zona Alta."
+
+def test_alerta_acceso_cerrado(configurar_entorno):
+    env = configurar_entorno
+    env.run()
+
+    alerta_acceso_cerrado = any("Acceso cerrado en la zona" in str(fact) for fact in env.facts())
+    assert alerta_acceso_cerrado, "Debería haber una alerta de acceso cerrado en la Zona Baja."
 
 if __name__ == "__main__":
     pytest.main()
