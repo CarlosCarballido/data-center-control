@@ -8,7 +8,7 @@ class EventsManager:
         self.env.reset()
 
     def agregar_zona(self, nombre, temperatura, humedad, estado_ac, acceso):
-        self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac {estado_ac}) (acceso {acceso}))')
+        self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{acceso}"))')
 
     def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None):
         hecho_existente = None
@@ -25,23 +25,13 @@ class EventsManager:
             new_fact += f' (temperatura {temperatura if temperatura is not None else hecho_existente["temperatura"]})'
             new_fact += f' (humedad {humedad if humedad is not None else hecho_existente["humedad"]})'
             new_fact += f' (estado_ac {estado_ac if estado_ac is not None else hecho_existente["estado_ac"]})'
-
-            # Solo agregar "acceso" si se proporciona un nuevo valor
-            if acceso is not None:
-                new_fact += f' (acceso {acceso})'
-            else:
-                new_fact += f' (acceso {hecho_existente["acceso"]})'
-
-            new_fact += ')'
-
+            new_fact += f' (acceso {acceso if acceso is not None else hecho_existente["acceso"]}))'
+            
             # Insertar el nuevo hecho
             self.env.assert_string(new_fact)
-            
             self.env.run()
-            
         else:
             print(f"Zona {nombre} no encontrada.")
-
 
     def agregar_rack(self, id, voltaje):
         self.env.assert_string(f'(rack (id "{id}") (voltaje {voltaje}))')
@@ -76,7 +66,7 @@ class EventsManager:
                 self.env.assert_string(new_fact)
 
     def agregar_sensor(self, tipo, value, zona):
-        self.env.assert_string(f'(sensor (tipo "{tipo}") (value {value}) (zona "{zona}"))')
+        self.env.assert_string(f'(sensor (tipo "{tipo}") (value "{value}") (zona "{zona}"))')
 
     def modificar_sensor(self, tipo, zona, value=None):
         for fact in self.env.facts():
@@ -95,19 +85,6 @@ class EventsManager:
                 new_fact = f'(actuadores (tipo "{tipo}") (valor {valor if valor is not None else fact["valor"]}) (zona "{zona}"))'
                 self.env.assert_string(new_fact)
 
-    def agregar_humo(self, nombre, zona, tipo, estado):
-        self.env.assert_string(f'(humo (nombre "{nombre}") (zona "{zona}") (tipo "{tipo}") (estado {estado}))')
-
-    def modificar_humo(self, nombre, zona=None, tipo=None, estado=None):
-        for fact in self.env.facts():
-            if fact.template.name == "humo" and fact["nombre"] == nombre:
-                self.env.retract(fact)
-                new_fact = f'(humo (nombre "{nombre}")'
-                new_fact += f' (zona "{zona if zona is not None else fact["zona"]}")'
-                new_fact += f' (tipo "{tipo if tipo is not None else fact["tipo"]}")'
-                new_fact += f' (estado {estado if estado is not None else fact["estado"]}))'
-                self.env.assert_string(new_fact)
-
     def agregar_sensor_humo(self, zona):
         self.env.assert_string(f'(sensor (tipo "humo") (value "si") (zona "{zona}"))')
 
@@ -116,19 +93,6 @@ class EventsManager:
             if fact.template.name == "sensor" and fact["tipo"] == "humo" and fact["zona"] == zona:
                 self.env.retract(fact)
                 new_fact = f'(sensor (tipo "humo") (value {"si" if value is None else value}) (zona "{zona}"))'
-                self.env.assert_string(new_fact)
-
-    def agregar_agua(self, nombre, zona, tipo, estado):
-        self.env.assert_string(f'(agua (nombre "{nombre}") (zona "{zona}") (tipo "{tipo}") (estado {estado}))')
-
-    def modificar_agua(self, nombre, zona=None, tipo=None, estado=None):
-        for fact in self.env.facts():
-            if fact.template.name == "agua" and fact["nombre"] == nombre:
-                self.env.retract(fact)
-                new_fact = f'(agua (nombre "{nombre}")'
-                new_fact += f' (zona "{zona if zona is not None else fact["zona"]}")'
-                new_fact += f' (tipo "{tipo if tipo is not None else fact["tipo"]}")'
-                new_fact += f' (estado {estado if estado is not None else fact["estado"]}))'
                 self.env.assert_string(new_fact)
 
     def agregar_sensor_agua(self, zona):

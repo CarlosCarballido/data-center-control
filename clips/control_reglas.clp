@@ -24,7 +24,8 @@
 
 (deftemplate sensor
     (slot tipo)    ;; temperatura, humedad, etc.
-    (slot valor)
+    (slot value)
+    (slot zona)
 )
 
 (deftemplate actuadores
@@ -33,19 +34,7 @@
     (slot valor)
 )
 
-(deftemplate humo
-    (slot zona)
-)
-
-(deftemplate agua
-    (slot zona)
-)
-
-(deftemplate sensor
-    (slot tipo)    ;; temperatura, humedad, etc.
-    (slot value)
-    (slot zona)
-)
+;; Reglas para climatización
 
 (defrule encender-ac
     (zona (nombre ?nombre) (temperatura ?temp&:(> ?temp 25)))
@@ -61,6 +50,8 @@
     (printout t "Apagando aire acondicionado en la zona: " ?nombre crlf)
 )
 
+;; Reglas de alertas para monitoreo
+
 (defrule alerta-voltaje
     (rack (id ?id) (voltaje ?v&:(< ?v 210)))
     =>
@@ -75,6 +66,8 @@
     (printout t "Alerta: Humedad alta en la zona: " ?nombre crlf)
 )
 
+;; Reglas para verificar acceso
+
 (defrule verificar-acceso
     (zona (nombre ?nombre) (acceso abierto))
     =>
@@ -88,6 +81,8 @@
     (assert (accion (tipo informacion) (comando "acceso_cerrado") (nombre ?nombre)))
     (printout t "Acceso cerrado en la zona: " ?nombre crlf)
 )
+
+;; Reglas para sensores
 
 (defrule verificar-temperatura
     (sensor (tipo temperatura) (value ?temp&:(> ?temp 25)) (zona ?zona))
@@ -104,6 +99,8 @@
     (assert (accion (tipo alerta) (comando "humedad_alta") (nombre ?zona)))
     (printout t "Alerta: Humedad alta en la zona: " ?zona crlf)
 )
+
+;; Reglas para actuadores
 
 (defrule verificar-ventiladores-altos
     (actuadores (tipo ventiladores) (valor ?v&:(> ?v 400)) (zona ?zona))
@@ -136,6 +133,8 @@
     (assert (accion (tipo alerta) (comando "luces_bajas") (nombre ?zona)))
     (printout t "Alerta: Las luces están muy tenues en la zona: " ?zona crlf)
 )
+
+;; Reglas para desastres
 
 (defrule activar-alarma-incendio
     (sensor (tipo humo) (value si) (zona ?zona))
