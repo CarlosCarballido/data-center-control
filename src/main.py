@@ -54,31 +54,39 @@ def generar_eventos_aleatorios(manager):
         ejecutar_reglas(manager.env)
         time.sleep(3)
 
-
 def manejar_alertas(env):
     hechos_para_modificar = []
+
     for fact in list(env.facts()):
         if fact.template.name == "accion" and fact["tipo"] == "alerta":
-            alerta_msg = f"Alerta: {fact['comando'].replace('_', ' ')} en la {fact['nombre']}"
-            print(alerta_msg)
+            # Verificar si la alerta ya ha sido resuelta
+            try:
+                resuelta = fact["resuelta"]
+            except KeyError:
+                resuelta = False
 
-            # Simular la reparación de la alerta
-            if fact['comando'] not in ["acceso_abierto", "acceso_cerrado"]:
-                time.sleep(2)
-                print(f"Reparación completada para: {alerta_msg}")
-                hechos_para_modificar.append(fact)
+            if not resuelta:
+                alerta_msg = f"Alerta: {fact['comando'].replace('_', ' ')} en la {fact['nombre']}"
+                print(alerta_msg)
+
+                # Simular la reparación de la alerta
+                if fact['comando'] not in ["acceso_abierto", "acceso_cerrado"]:
+                    time.sleep(2)
+                    print(f"Reparación completada para: {alerta_msg}")
+                    hechos_para_modificar.append(fact)
 
     # Modificar los hechos que causaron la alerta
     for fact in hechos_para_modificar:
         # Actualizar el valor del sensor correspondiente a un valor aceptable (por ejemplo, 50)
         for sensor_fact in env.facts():
             if sensor_fact.template.name == "sensor" and sensor_fact["zona"] == fact["nombre"] and sensor_fact["tipo"] == "humedad":
-                # Retirar el hecho antiguo
-                sensor_fact.modify_slots(value=50)  # Cambiar la humedad a un valor aceptable
+                # Modificar el valor del sensor directamente
+                sensor_fact.modify_slots(value=50)
                 break
 
-        # Marcar el hecho de alerta como resuelto
-        fact.modify_slots(tipo="resuelta")
+        # Añadir o modificar el slot `resuelta` en el hecho de alerta para indicar que ha sido gestionado
+        fact.modify_slots(resuelta=True)
+
 
 if __name__ == "__main__":
     env = cargar_reglas()

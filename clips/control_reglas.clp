@@ -15,6 +15,7 @@
     (slot tipo)    ;; climatizacion, desastre, etc.
     (slot comando) ;; encender_ac, apagar_ac, etc.
     (slot nombre)  ;; nombre de la zona
+    (slot resuelta (default FALSE))  ;; indica si la alerta ya ha sido gestionada
 )
 
 (deftemplate desastre
