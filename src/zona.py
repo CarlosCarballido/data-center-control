@@ -20,3 +20,4 @@ class zona:
     
     def __ge__(self, o: object) -> bool:
         return self.nivel >= o.nivel
+    

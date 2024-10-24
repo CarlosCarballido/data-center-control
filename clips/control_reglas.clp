@@ -64,24 +64,28 @@
 (defrule alerta-voltaje
     (rack (id ?id) (voltaje ?v&:(< ?v 210)))
     =>
+    (assert (accion (tipo alerta) (comando "voltaje_bajo") (nombre ?id)))
     (printout t "Alerta: Voltaje bajo en el rack: " ?id crlf)
 )
 
 (defrule alerta-humedad
     (zona (nombre ?nombre) (humedad ?h&:(> ?h 70)))
     =>
+    (assert (accion (tipo alerta) (comando "humedad_alta") (nombre ?nombre)))
     (printout t "Alerta: Humedad alta en la zona: " ?nombre crlf)
 )
 
 (defrule verificar-acceso
     (zona (nombre ?nombre) (acceso abierto))
     =>
+    (assert (accion (tipo informacion) (comando "acceso_abierto") (nombre ?nombre)))
     (printout t "Acceso abierto en la zona: " ?nombre crlf)
 )
 
 (defrule verificar-acceso-cerrado
     (zona (nombre ?nombre) (acceso cerrado))
     =>
+    (assert (accion (tipo informacion) (comando "acceso_cerrado") (nombre ?nombre)))
     (printout t "Acceso cerrado en la zona: " ?nombre crlf)
 )
 
@@ -89,6 +93,7 @@
     (sensor (tipo temperatura) (value ?temp&:(> ?temp 25)) (zona ?zona))
     (zona (nombre ?zona))
     =>
+    (assert (accion (tipo alerta) (comando "temperatura_alta") (nombre ?zona)))
     (printout t "Alerta: Temperatura alta en la zona: " ?zona crlf)
 )
 
@@ -96,6 +101,7 @@
     (sensor (tipo humedad) (value ?h&:(> ?h 70)) (zona ?zona))
     (zona (nombre ?zona))
     =>
+    (assert (accion (tipo alerta) (comando "humedad_alta") (nombre ?zona)))
     (printout t "Alerta: Humedad alta en la zona: " ?zona crlf)
 )
 
@@ -103,6 +109,7 @@
     (actuadores (tipo ventiladores) (valor ?v&:(> ?v 400)) (zona ?zona))
     (zona (nombre ?zona))
     =>
+    (assert (accion (tipo alerta) (comando "ventiladores_altos") (nombre ?zona)))
     (printout t "Alerta: Velocidad de los ventiladores alta en la zona: " ?zona crlf)
 )
 
@@ -110,6 +117,7 @@
     (actuadores (tipo ventiladores) (valor ?v&:(< ?v 200)) (zona ?zona))
     (zona (nombre ?zona))
     =>
+    (assert (accion (tipo alerta) (comando "ventiladores_bajos") (nombre ?zona)))
     (printout t "Alerta: Velocidad de los ventiladores baja en la zona: " ?zona crlf)
 )
 
@@ -117,6 +125,7 @@
     (actuadores (tipo luces) (valor ?l&:(> ?l 100)) (zona ?zona))
     (zona (nombre ?zona))
     =>
+    (assert (accion (tipo alerta) (comando "luces_altas") (nombre ?zona)))
     (printout t "Alerta: Las luces están muy brillantes en la zona: " ?zona crlf)
 )
 
@@ -124,15 +133,15 @@
     (actuadores (tipo luces) (valor ?l&:(< ?l 20)) (zona ?zona))
     (zona (nombre ?zona))
     =>
+    (assert (accion (tipo alerta) (comando "luces_bajas") (nombre ?zona)))
     (printout t "Alerta: Las luces están muy tenues en la zona: " ?zona crlf)
 )
-
 
 (defrule activar-alarma-incendio
     (sensor (tipo humo) (value si) (zona ?zona))
     (zona (nombre ?zona))
     =>
-    (assert (desastre (tipo incendio) (zona ?zona)))
+    (assert (accion (tipo alerta) (comando "incendio_detectado") (nombre ?zona)))
     (printout t "Alerta: Incendio detectado en la zona: " ?zona crlf)
 )
 
@@ -140,6 +149,6 @@
     (sensor (tipo agua) (value si) (zona ?zona))
     (zona (nombre ?zona))
     =>
-    (assert (desastre (tipo inundacion) (zona ?zona)))
+    (assert (accion (tipo alerta) (comando "inundacion_detectada") (nombre ?zona)))
     (printout t "Alerta: Inundacion detectada en la zona: " ?zona crlf)
 )
