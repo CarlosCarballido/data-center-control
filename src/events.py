@@ -7,8 +7,8 @@ class EventsManager:
     def reset(self):
         self.env.reset()
 
-    def agregar_zona(self, nombre, temperatura, humedad, estado_ac, acceso):
-        self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{acceso}"))')
+    def agregar_zona(self, nombre, temperatura, humedad, estado_ac, nivel_acceso):
+        self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{nivel_acceso}"))')
 
     def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None):
         hecho_existente = None
