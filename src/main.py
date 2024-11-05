@@ -53,9 +53,8 @@ def generar_eventos_aleatorios(manager):
 
 if __name__ == "__main__":
     env = cargar_reglas()
-    manager = EventsManager()
-    manager.env = env
-    
+    manager = EventsManager(env)  # Pasar el entorno de CLIPS al inicializar
+
     ejecutar_reglas(env)
 
     evento_hilo = threading.Thread(target=generar_eventos_aleatorios, args=(manager,))
