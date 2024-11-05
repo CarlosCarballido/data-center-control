@@ -34,20 +34,21 @@ def generar_eventos_aleatorios(manager):
         temperatura = random.randint(15, 35)
         humedad = random.choices([random.randint(30, 60), random.randint(70, 80)], weights=[80, 20])[0]
         estado_ac = random.choice(["encendido", "apagado"])
-        acceso = random.randint(1, 3)
+        nivel_acceso = random.randint(1, 3)
 
         existe = any(fact.template.name == "zona" and fact["nombre"] == zona for fact in manager.env.facts())
         if not existe:
-            manager.agregar_zona(zona, temperatura, humedad, estado_ac, acceso)
+            manager.agregar_zona(zona, temperatura, humedad, estado_ac, nivel_acceso)
         else:
-            manager.modificar_zona(zona, temperatura=temperatura, humedad=humedad, estado_ac=estado_ac, acceso=acceso)
-        
+            manager.modificar_zona(zona, temperatura=temperatura, humedad=humedad, estado_ac=estado_ac, nivel_acceso=nivel_acceso)
+
         tipo_sensor = random.choice(["humo", "agua"])
         if random.choice([True, False]):
             manager.agregar_sensor(tipo_sensor, "si", zona)
-        
+
         ejecutar_reglas(manager.env)
         time.sleep(3)
+
 
 
 if __name__ == "__main__":
