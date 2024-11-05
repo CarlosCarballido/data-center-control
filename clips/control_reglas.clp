@@ -4,6 +4,12 @@
     (slot humedad)
     (slot estado_ac) ;; encendido, apagado
     (slot acceso)    ;; abierto, cerrado
+    (slot nivel_acceso (default 1)) ;; 1, 2, 3 - nivel de acceso requerido
+)
+
+(deftemplate usuario
+    (slot nombre)
+    (slot rango) ;; 1 = menor acceso, 3 = mayor acceso
 )
 
 (deftemplate rack
@@ -16,6 +22,7 @@
     (slot comando) ;; encender_ac, apagar_ac, etc.
     (slot nombre)  ;; nombre de la zona
     (slot resuelta (default FALSE))  ;; indica si la alerta ya ha sido gestionada
+    (slot nivel_acceso) ;; nivel de acceso necesario para ejecutar la acción
 )
 
 (deftemplate desastre
@@ -40,15 +47,13 @@
 (defrule encender-ac
     (zona (nombre ?nombre) (temperatura ?temp&:(> ?temp 25)))
     =>
-    (assert (accion (tipo climatizacion) (comando "encender_ac") (nombre ?nombre)))
-    (printout t "Encendiendo aire acondicionado en la zona: " ?nombre crlf)
+    (printout t "Encendiendo aire acondicionado en la zona " ?nombre "." crlf)
 )
 
 (defrule apagar-ac
-    (zona (nombre ?nombre) (temperatura ?temp&:(<= ?temp 20)))
+    (zona (nombre ?nombre) (temperatura ?temp&:(< ?temp 18)))
     =>
-    (assert (accion (tipo climatizacion) (comando "apagar_ac") (nombre ?nombre)))
-    (printout t "Apagando aire acondicionado en la zona: " ?nombre crlf)
+    (printout t "Apagando aire acondicionado en la zona " ?nombre "." crlf)
 )
 
 ;; Reglas de alertas para monitoreo
@@ -151,4 +156,26 @@
     =>
     (assert (accion (tipo alerta) (comando "inundacion_detectada") (nombre ?zona)))
     (printout t "Alerta: Inundacion detectada en la zona: " ?zona crlf)
+)
+
+(defrule acceso-zona-restringido
+    (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)))
+    =>
+    (bind ?mayor_acceso (> ?nivel_acceso ?rango))
+    (if ?mayor_acceso then
+        (printout t "Acceso denegado para el usuario " ?usuario " a la zona " ?nombre " debido a rango insuficiente." crlf)
+    )
+)
+
+;; Regla para permitir acceso a usuarios con nivel suficiente
+
+(defrule acceso-zona
+    (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)))
+    =>
+    (bind ?permitido (<= ?nivel_acceso ?rango))
+    (if ?permitido then
+        (printout t "Acceso permitido para el usuario " ?usuario " a la zona " ?nombre "." crlf)
+    )
 )

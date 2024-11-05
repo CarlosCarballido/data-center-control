@@ -1,35 +1,52 @@
 import clips
 
 class EventsManager:
-    def __init__(self):
-        self.env = clips.Environment()
+    def __init__(self, env):
+        self.env = env
         
     def reset(self):
         self.env.reset()
 
-    def agregar_zona(self, nombre, temperatura, humedad, estado_ac, acceso):
-        self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{acceso}"))')
+    def agregar_zona(self, nombre, temperatura, humedad, estado_ac, nivel_acceso):
+        if nivel_acceso is None:
+            nivel_acceso = 1
+        nivel_acceso = int(nivel_acceso)
+        self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{nivel_acceso}"))')
 
-    def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None):
-        hecho_existente = None
-
+    def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None, nivel_acceso=None):
+        # Buscar el hecho correspondiente y eliminarlo, luego agregar uno nuevo con los valores actualizados
+        fact_to_modify = None
         for fact in self.env.facts():
             if fact.template.name == "zona" and fact["nombre"] == nombre:
-                hecho_existente = fact
+                fact_to_modify = fact
                 break
 
-        if hecho_existente:
-            new_fact = f'(zona (nombre "{nombre}")'
-            new_fact += f' (temperatura {temperatura if temperatura is not None else hecho_existente["temperatura"]})'
-            new_fact += f' (humedad {humedad if humedad is not None else hecho_existente["humedad"]})'
-            new_fact += f' (estado_ac {estado_ac if estado_ac is not None else hecho_existente["estado_ac"]})'
-            new_fact += f' (acceso {acceso if acceso is not None else hecho_existente["acceso"]}))'
-            
-            self.env.assert_string(new_fact)
-            self.env.run()
-        else:
-            print(f"Zona {nombre} no encontrada.")
+        if fact_to_modify:
+            # Extraer los valores actuales del hecho
+            current_temperatura = fact_to_modify["temperatura"]
+            current_humedad = fact_to_modify["humedad"]
+            current_estado_ac = fact_to_modify["estado_ac"]
+            current_acceso = fact_to_modify["acceso"] if "acceso" in fact_to_modify else 1  # Valor por defecto 1
+            current_nivel_acceso = fact_to_modify["nivel_acceso"] if fact_to_modify["nivel_acceso"] is not None else 1  # Valor por defecto 1
 
+            # Utilizar los valores actuales si no se proporcionan nuevos valores
+            new_temperatura = temperatura if temperatura is not None else current_temperatura
+            new_humedad = humedad if humedad is not None else current_humedad
+            new_estado_ac = estado_ac if estado_ac is not None else current_estado_ac
+            new_acceso = acceso if acceso is not None else current_acceso
+            new_nivel_acceso = nivel_acceso if nivel_acceso is not None else current_nivel_acceso
+
+            # Asegurarse de que todos los valores son del tipo correcto
+            new_nivel_acceso = int(new_nivel_acceso)
+            new_temperatura = int(new_temperatura)
+            new_humedad = int(new_humedad)
+
+            # Eliminar el hecho actual
+            self.env.assert_string(f"(retract {fact_to_modify.index})")
+
+            # Agregar el hecho modificado con valores actualizados
+            self.env.assert_string(f"(zona (nombre \"{nombre}\") (temperatura {new_temperatura}) (humedad {new_humedad}) (estado_ac \"{new_estado_ac}\") (nivel_acceso {new_nivel_acceso}))")
+            
     def agregar_rack(self, id, voltaje):
         self.env.assert_string(f'(rack (id "{id}") (voltaje {voltaje}))')
 
