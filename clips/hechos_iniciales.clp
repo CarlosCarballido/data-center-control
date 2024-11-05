@@ -12,4 +12,7 @@
     (sensor (tipo humedad) (value 60) (zona "Zona Alta"))
     (sensor (tipo humo) (value "si") (zona "Zona Baja"))
     (sensor (tipo agua) (value "no") (zona "Zona Baja"))
+    (usuario (nombre "Juan") (rango 1))
+    (usuario (nombre "Pedro") (rango 2))
+    (usuario (nombre "Maria") (rango 3))
 )
