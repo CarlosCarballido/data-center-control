@@ -10,6 +10,7 @@ class EventsManager:
     def agregar_zona(self, nombre, temperatura, humedad, estado_ac, nivel_acceso):
         if nivel_acceso is None:
             nivel_acceso = 1
+        nivel_acceso = int(nivel_acceso)
         self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{nivel_acceso}"))')
 
     def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None, nivel_acceso=None):
@@ -34,6 +35,11 @@ class EventsManager:
             new_estado_ac = estado_ac if estado_ac is not None else current_estado_ac
             new_acceso = acceso if acceso is not None else current_acceso
             new_nivel_acceso = nivel_acceso if nivel_acceso is not None else current_nivel_acceso
+
+            # Asegurarse de que todos los valores son del tipo correcto
+            new_nivel_acceso = int(new_nivel_acceso)
+            new_temperatura = int(new_temperatura)
+            new_humedad = int(new_humedad)
 
             # Eliminar el hecho actual
             self.env.assert_string(f"(retract {fact_to_modify.index})")
