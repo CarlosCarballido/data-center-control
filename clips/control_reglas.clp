@@ -45,19 +45,15 @@
 ;; Reglas para climatización
 
 (defrule encender-ac
-    (usuario (nombre ?usuario) (rango ?rango&:(>= ?rango 2)))
     (zona (nombre ?nombre) (temperatura ?temp&:(> ?temp 25)))
     =>
-    (assert (accion (tipo climatizacion) (comando "encender_ac") (nombre ?nombre) (nivel_acceso 2)))
-    (printout t "Usuario " ?usuario " con rango " ?rango " encendiendo aire acondicionado en la zona " ?nombre "." crlf)
+    (printout t "Encendiendo aire acondicionado en la zona " ?nombre "." crlf)
 )
 
 (defrule apagar-ac
-    (usuario (nombre ?usuario) (rango ?rango&:(>= ?rango 2)))
     (zona (nombre ?nombre) (temperatura ?temp&:(< ?temp 18)))
     =>
-    (assert (accion (tipo climatizacion) (comando "apagar_ac") (nombre ?nombre) (nivel_acceso 2)))
-    (printout t "Usuario " ?usuario " con rango " ?rango " apagando aire acondicionado en la zona " ?nombre "." crlf)
+    (printout t "Apagando aire acondicionado en la zona " ?nombre "." crlf)
 )
 
 ;; Reglas de alertas para monitoreo
@@ -164,7 +160,7 @@
 
 (defrule acceso-zona-restringido
     (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
-    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)) (acceso cerrado))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)))
     =>
     (bind ?mayor_acceso (> ?nivel_acceso ?rango))
     (if ?mayor_acceso then
@@ -176,12 +172,10 @@
 
 (defrule acceso-zona
     (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
-    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)) (acceso cerrado))
-    ?fact <- (zona (nombre ?nombre) (acceso cerrado))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)))
     =>
     (bind ?permitido (<= ?nivel_acceso ?rango))
     (if ?permitido then
-        (modify ?fact (acceso abierto))
         (printout t "Acceso permitido para el usuario " ?usuario " a la zona " ?nombre "." crlf)
     )
 )
