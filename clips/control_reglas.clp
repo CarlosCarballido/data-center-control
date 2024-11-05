@@ -164,14 +164,16 @@
 
 (defrule acceso-zona-restringido
     (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
-    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso) ?nivel_acceso&:(> ?nivel_acceso ?rango)) (acceso cerrado))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)) (acceso cerrado))
+    ?test <- (test (> ?nivel_acceso ?rango))
     =>
     (printout t "Acceso denegado para el usuario " ?usuario " a la zona " ?nombre " debido a rango insuficiente." crlf)
 )
 
 (defrule acceso-zona
     (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
-    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso) ?nivel_acceso&:(<= ?nivel_acceso ?rango)) (acceso cerrado))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso)) (acceso cerrado))
+    ?test <- (test (<= ?nivel_acceso ?rango))
     ?fact <- (zona (nombre ?nombre) (acceso cerrado))
     =>
     (modify ?fact (acceso abierto))
