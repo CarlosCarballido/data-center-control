@@ -1,8 +1,9 @@
 ;; Definiciones de hechos iniciales (deffacts)
 
 (deffacts estado-inicial
-    (zona (nombre "Zona Alta") (temperatura 24) (humedad 60) (estado_ac apagado) (acceso cerrado))
-    (zona (nombre "Zona Baja") (temperatura 21) (humedad 40) (estado_ac apagado) (acceso cerrado))
+    (zona (nombre "Zona Alta") (temperatura 24) (humedad 60) (estado_ac apagado) (acceso cerrado) (nivel_acceso 3))
+    (zona (nombre "Zona Baja") (temperatura 21) (humedad 40) (estado_ac apagado) (acceso cerrado) (nivel_acceso 2))
+    (zona (nombre "Zona Media") (temperatura 22) (humedad 50) (estado_ac apagado) (acceso cerrado) (nivel_acceso 1))
     (rack (id "Rack Baja") (voltaje 220))
     (actuadores (tipo ventiladores) (valor 350) (zona "Zona Alta"))
     (actuadores (tipo ventiladores) (valor 250) (zona "Zona Baja"))
