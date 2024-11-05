@@ -34,7 +34,7 @@ def generar_eventos_aleatorios(manager):
         temperatura = random.randint(15, 35)
         humedad = random.choices([random.randint(30, 60), random.randint(70, 80)], weights=[80, 20])[0]
         estado_ac = random.choice(["encendido", "apagado"])
-        acceso = random.choice(["abierto", "cerrado"])
+        acceso = random.randint(1, 3)
 
         existe = any(fact.template.name == "zona" and fact["nombre"] == zona for fact in manager.env.facts())
         if not existe:
