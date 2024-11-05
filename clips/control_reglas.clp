@@ -6,6 +6,11 @@
     (slot acceso)    ;; abierto, cerrado
 )
 
+(deftemplate usuario
+    (slot nombre)
+    (slot rango) ;; 1 = menor acceso, 3 = mayor acceso
+)
+
 (deftemplate rack
     (slot id)
     (slot voltaje)
@@ -151,4 +156,19 @@
     =>
     (assert (accion (tipo alerta) (comando "inundacion_detectada") (nombre ?zona)))
     (printout t "Alerta: Inundacion detectada en la zona: " ?zona crlf)
+)
+
+(defrule acceso-zona-restringido
+    (usuario (nombre ?usuario) (rango ?rango))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(> ?nivel_acceso ?rango)) (acceso cerrado))
+    =>
+    (printout t "Acceso denegado para el usuario " ?usuario " a la zona " ?nombre " debido a rango insuficiente." crlf)
+)
+
+(defrule acceso-zona
+    (usuario (nombre ?usuario) (rango ?rango))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(<= ?nivel_acceso ?rango)) (acceso cerrado))
+    =>
+    (modify (zona (nombre ?nombre)) (acceso abierto))
+    (printout t "Acceso permitido para el usuario " ?usuario " a la zona " ?nombre "." crlf)
 )
