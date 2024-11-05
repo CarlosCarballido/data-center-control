@@ -13,13 +13,11 @@ class EventsManager:
     def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None):
         hecho_existente = None
 
-        # Buscar el hecho correspondiente al nombre de la zona
         for fact in self.env.facts():
             if fact.template.name == "zona" and fact["nombre"] == nombre:
                 hecho_existente = fact
                 break
 
-        # Si encontramos el hecho, añadimos un nuevo hecho con los valores modificados
         if hecho_existente:
             new_fact = f'(zona (nombre "{nombre}")'
             new_fact += f' (temperatura {temperatura if temperatura is not None else hecho_existente["temperatura"]})'
@@ -27,7 +25,6 @@ class EventsManager:
             new_fact += f' (estado_ac {estado_ac if estado_ac is not None else hecho_existente["estado_ac"]})'
             new_fact += f' (acceso {acceso if acceso is not None else hecho_existente["acceso"]}))'
             
-            # Insertar el nuevo hecho
             self.env.assert_string(new_fact)
             self.env.run()
         else:
