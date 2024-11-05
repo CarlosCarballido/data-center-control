@@ -4,7 +4,7 @@
     (slot humedad)
     (slot estado_ac) ;; encendido, apagado
     (slot acceso)    ;; abierto, cerrado
-    (slot nivel_acceso) ;; 1, 2, 3 - nivel de acceso requerido
+    (slot nivel_acceso (default 1)) ;; 1, 2, 3 - nivel de acceso requerido
 )
 
 (deftemplate usuario
