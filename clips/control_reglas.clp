@@ -22,6 +22,7 @@
     (slot comando) ;; encender_ac, apagar_ac, etc.
     (slot nombre)  ;; nombre de la zona
     (slot resuelta (default FALSE))  ;; indica si la alerta ya ha sido gestionada
+    (slot nivel_acceso) ;; nivel de acceso necesario para ejecutar la acción
 )
 
 (deftemplate desastre
@@ -44,17 +45,19 @@
 ;; Reglas para climatización
 
 (defrule encender-ac
+    (usuario (nombre ?usuario) (rango ?rango&:(>= ?rango 2)))
     (zona (nombre ?nombre) (temperatura ?temp&:(> ?temp 25)))
     =>
-    (assert (accion (tipo climatizacion) (comando "encender_ac") (nombre ?nombre)))
-    (printout t "Encendiendo aire acondicionado en la zona: " ?nombre crlf)
+    (assert (accion (tipo climatizacion) (comando "encender_ac") (nombre ?nombre) (nivel_acceso 2)))
+    (printout t "Usuario " ?usuario " con rango " ?rango " encendiendo aire acondicionado en la zona " ?nombre "." crlf)
 )
 
 (defrule apagar-ac
-    (zona (nombre ?nombre) (temperatura ?temp&:(<= ?temp 20)))
+    (usuario (nombre ?usuario) (rango ?rango&:(>= ?rango 2)))
+    (zona (nombre ?nombre) (temperatura ?temp&:(< ?temp 18)))
     =>
-    (assert (accion (tipo climatizacion) (comando "apagar_ac") (nombre ?nombre)))
-    (printout t "Apagando aire acondicionado en la zona: " ?nombre crlf)
+    (assert (accion (tipo climatizacion) (comando "apagar_ac") (nombre ?nombre) (nivel_acceso 2)))
+    (printout t "Usuario " ?usuario " con rango " ?rango " apagando aire acondicionado en la zona " ?nombre "." crlf)
 )
 
 ;; Reglas de alertas para monitoreo
@@ -160,16 +163,17 @@
 )
 
 (defrule acceso-zona-restringido
-    (usuario (nombre ?usuario) (rango ?rango))
-    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(> ?nivel_acceso ?rango)) (acceso cerrado))
+    (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso) ?nivel_acceso&:(> ?nivel_acceso ?rango)) (acceso cerrado))
     =>
     (printout t "Acceso denegado para el usuario " ?usuario " a la zona " ?nombre " debido a rango insuficiente." crlf)
 )
 
 (defrule acceso-zona
-    (usuario (nombre ?usuario) (rango ?rango))
-    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(<= ?nivel_acceso ?rango)) (acceso cerrado))
+    (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
+    (zona (nombre ?nombre) (nivel_acceso ?nivel_acceso&:(integer ?nivel_acceso) ?nivel_acceso&:(<= ?nivel_acceso ?rango)) (acceso cerrado))
+    ?fact <- (zona (nombre ?nombre) (acceso cerrado))
     =>
-    (modify (zona (nombre ?nombre)) (acceso abierto))
+    (modify ?fact (acceso abierto))
     (printout t "Acceso permitido para el usuario " ?usuario " a la zona " ?nombre "." crlf)
 )
