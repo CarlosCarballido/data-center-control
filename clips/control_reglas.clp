@@ -15,6 +15,7 @@
 (deftemplate rack
     (slot id)
     (slot voltaje)
+    (slot temperatura)
 )
 
 (deftemplate accion
@@ -72,30 +73,36 @@
     (printout t "Alerta: Humedad alta en la zona: " ?nombre crlf)
 )
 
-;; Reglas para verificar acceso
-
-(defrule verificar-acceso
-    (zona (nombre ?nombre) (acceso abierto))
-    =>
-    (assert (accion (tipo informacion) (comando "acceso_abierto") (nombre ?nombre)))
-    (printout t "Acceso abierto en la zona: " ?nombre crlf)
-)
-
-(defrule verificar-acceso-cerrado
-    (zona (nombre ?nombre) (acceso cerrado))
-    =>
-    (assert (accion (tipo informacion) (comando "acceso_cerrado") (nombre ?nombre)))
-    (printout t "Acceso cerrado en la zona: " ?nombre crlf)
-)
-
 ;; Reglas para sensores
 
-(defrule verificar-temperatura
+(defrule verificar-temperatura-alta
     (sensor (tipo temperatura) (value ?temp&:(> ?temp 25)) (zona ?zona))
     (zona (nombre ?zona))
     =>
     (assert (accion (tipo alerta) (comando "temperatura_alta") (nombre ?zona)))
     (printout t "Alerta: Temperatura alta en la zona: " ?zona crlf)
+)
+
+(defrule verificar-temperatura_baja
+    (sensor (tipo temperatura) (value ?temp&:(< ?temp 17)) (zona ?zona))
+    (zona (nombre ?zona))
+    =>
+    (assert (accion (tipo alerta) (comando "temperatura_baja") (nombre ?zona)))
+    (printout t "Alerta: Temperatura baja en la zona: " ?zona crlf)
+)
+
+(defrule verificar-temperatura-alta-racks
+    (rack (id ?id) (temperatura ?temp&:(> ?temp 50)))
+    =>
+    (assert (accion (tipo alerta) (comando "temperatura_alta") (nombre ?id)))
+    (printout t "Alerta: Temperatura alta en el rack: " ?id crlf)
+)
+
+(defrule verificar-temperatura-baja-racks
+    (rack (id ?id) (temperatura ?temp&:(< ?temp 10)))
+    =>
+    (assert (accion (tipo alerta) (comando "temperatura_baja") (nombre ?id)))
+    (printout t "Alerta: Temperatura baja en el rack: " ?id crlf)
 )
 
 (defrule verificar-humedad
@@ -143,20 +150,24 @@
 ;; Reglas para desastres
 
 (defrule activar-alarma-incendio
-    (sensor (tipo humo) (value si) (zona ?zona))
+    (declare (salience 10))
+    (sensor (tipo humo) (value "si") (zona ?zona))
     (zona (nombre ?zona))
     =>
     (assert (accion (tipo alerta) (comando "incendio_detectado") (nombre ?zona)))
     (printout t "Alerta: Incendio detectado en la zona: " ?zona crlf)
 )
 
+
 (defrule activar-alarma-inundacion
-    (sensor (tipo agua) (value si) (zona ?zona))
+    (declare (salience 10))
+    (sensor (tipo agua) (value "si") (zona ?zona))
     (zona (nombre ?zona))
     =>
     (assert (accion (tipo alerta) (comando "inundacion_detectada") (nombre ?zona)))
     (printout t "Alerta: Inundacion detectada en la zona: " ?zona crlf)
 )
+
 
 (defrule acceso-zona-restringido
     (usuario (nombre ?usuario) (rango ?rango&:(integer ?rango)))
