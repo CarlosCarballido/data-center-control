@@ -28,7 +28,7 @@ def ejecutar_reglas(env):
     env.run()
 
 def generar_eventos_aleatorios(manager):
-    zonas = ["Cafeteria", "zona2", "zona3"]
+    zonas = ["Cafeteria", "Pasillo", "Oficina", "Sala de Pruebas", "Sala de Servidores", "Sala de Control"]
     while True:
         zona = random.choice(zonas)
         temperatura = random.randint(15, 35)
@@ -57,9 +57,12 @@ if __name__ == "__main__":
 
     ejecutar_reglas(env)
 
-    evento_hilo = threading.Thread(target=generar_eventos_aleatorios, args=(manager,))
-    evento_hilo.daemon = True
-    evento_hilo.start()
+    generar_eventos = input("¿Quieres que se generen eventos aleatorios? (s/n): ").strip().lower()
+    
+    if generar_eventos == 's':
+        evento_hilo = threading.Thread(target=generar_eventos_aleatorios, args=(manager,))
+        evento_hilo.daemon = True
+        evento_hilo.start()
 
-    while True:
-        time.sleep(3)
+        while True:
+            time.sleep(3)
