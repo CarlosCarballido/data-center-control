@@ -28,7 +28,7 @@ def ejecutar_reglas(env):
     env.run()
 
 def generar_eventos_aleatorios(manager):
-    zonas = ["Cafeteria", "zona2", "zona3"]
+    zonas = ["Cafeteria", "Pasillo", "Oficina", "Sala de Pruebas", "Sala de Servidores", "Sala de Control"]
     while True:
         zona = random.choice(zonas)
         temperatura = random.randint(15, 35)
