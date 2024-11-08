@@ -57,9 +57,12 @@ if __name__ == "__main__":
 
     ejecutar_reglas(env)
 
-    evento_hilo = threading.Thread(target=generar_eventos_aleatorios, args=(manager,))
-    evento_hilo.daemon = True
-    evento_hilo.start()
+    generar_eventos = input("¿Quieres que se generen eventos aleatorios? (s/n): ").strip().lower()
+    
+    if generar_eventos == 's':
+        evento_hilo = threading.Thread(target=generar_eventos_aleatorios, args=(manager,))
+        evento_hilo.daemon = True
+        evento_hilo.start()
 
-    while True:
-        time.sleep(3)
+        while True:
+            time.sleep(3)
