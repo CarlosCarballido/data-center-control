@@ -1,5 +1,3 @@
-import clips
-
 class EventsManager:
     def __init__(self, env):
         self.env = env
@@ -14,7 +12,6 @@ class EventsManager:
         self.env.assert_string(f'(zona (nombre "{nombre}") (temperatura {temperatura}) (humedad {humedad}) (estado_ac "{estado_ac}") (acceso "{nivel_acceso}"))')
 
     def modificar_zona(self, nombre, temperatura=None, humedad=None, estado_ac=None, acceso=None, nivel_acceso=None):
-        # Buscar el hecho correspondiente y eliminarlo, luego agregar uno nuevo con los valores actualizados
         fact_to_modify = None
         for fact in self.env.facts():
             if fact.template.name == "zona" and fact["nombre"] == nombre:
@@ -22,29 +19,24 @@ class EventsManager:
                 break
 
         if fact_to_modify:
-            # Extraer los valores actuales del hecho
             current_temperatura = fact_to_modify["temperatura"]
             current_humedad = fact_to_modify["humedad"]
             current_estado_ac = fact_to_modify["estado_ac"]
             current_acceso = fact_to_modify["acceso"] if "acceso" in fact_to_modify else 1  # Valor por defecto 1
             current_nivel_acceso = fact_to_modify["nivel_acceso"] if fact_to_modify["nivel_acceso"] is not None else 1  # Valor por defecto 1
 
-            # Utilizar los valores actuales si no se proporcionan nuevos valores
             new_temperatura = temperatura if temperatura is not None else current_temperatura
             new_humedad = humedad if humedad is not None else current_humedad
             new_estado_ac = estado_ac if estado_ac is not None else current_estado_ac
             new_acceso = acceso if acceso is not None else current_acceso
             new_nivel_acceso = nivel_acceso if nivel_acceso is not None else current_nivel_acceso
 
-            # Asegurarse de que todos los valores son del tipo correcto
             new_nivel_acceso = int(new_nivel_acceso)
             new_temperatura = int(new_temperatura)
             new_humedad = int(new_humedad)
 
-            # Eliminar el hecho actual
             self.env.assert_string(f"(retract {fact_to_modify.index})")
 
-            # Agregar el hecho modificado con valores actualizados
             self.env.assert_string(f"(zona (nombre \"{nombre}\") (temperatura {new_temperatura}) (humedad {new_humedad}) (estado_ac \"{new_estado_ac}\") (nivel_acceso {new_nivel_acceso}))")
             
     def agregar_rack(self, id, voltaje):
